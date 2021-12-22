@@ -90,6 +90,9 @@ usage: $basename
   -database      target instance
   -username      target instance account name
   -password      target instance account password
+
+                 user will be prompted for password if necessary
+
   -dumpdir       the name of the dump directory
   -tracefile     the name of the tracefile to retrieve
   -sysdba        logon as sysdba
@@ -257,6 +260,7 @@ end;
   -database      target instance
   -username      target instance account name
   -password      target instance account password
+                 user will be prompted for password if necessary
   -dumpdir       the name of the dump directory
   -tracefile     the name of the tracefile to retrieve
   -sysdba        logon as sysdba
