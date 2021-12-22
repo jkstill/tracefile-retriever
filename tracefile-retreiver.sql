@@ -265,6 +265,8 @@ end;
 
 spool off
 
+set term on
+
 prompt Read Time in Seconds:
 print :n_elapsed_seconds
 
