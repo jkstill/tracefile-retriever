@@ -63,17 +63,26 @@ die "Connect to  $db failed \n" unless $dbh;
 $dbh->{ora_check_sql} = 0;
 $dbh->{RowCacheSize} = 100;
 
-# reads up to 100M bytes
-# max possible it 2B
+# just found this method in AWS docs - they have more than one way documented, but this one works.
+# see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.Oracle.html
+# look for 'shows the text of a log file'
+# dunno why they do not use this same code for 'Retriving trace files', but that code 
+# relies on an external table with a varchar2(400) column - it does not work properly
+$sql = q{SELECT text FROM TABLE(rdsadmin.rds_file_util.read_text_file(:DUMPDIR,:tracefile_name_in))};
 
 my $sth = $dbh->prepare($sql,{ora_check_sql => 0});
+
+#print "DUMPDIR: $dumpDir\n";
+#print "tracefile: $tracefileName\n";
 
 $sth->bind_param( ':DUMPDIR', $dumpDir, { ora_type => ORA_VARCHAR2 } );
 $sth->bind_param( ':tracefile_name_in', $tracefileName, { ora_type => ORA_VARCHAR2 } );
 $sth->execute;
 
-while ( my $line = $dbh->func('dbms_output_get')) {
-	print "$line";
+while ( my ($text) = $sth->fetchrow_array) {
+	# handle blank lines
+	$text = defined($text) ? $text : '';
+	print "$text\n";
 }
 
 $dbh->disconnect;
@@ -107,6 +116,7 @@ usage: $basename
   be careful with very large trace files.
 
   Why not use CLOB?  See the notes in 'perldoc $basename'
+  (CLOB should be faster)
 
   Why not use PIPE ROW?  Because it requires creating database objects,
   which is frequently either inconvenient, or not possible
@@ -116,142 +126,12 @@ usage: $basename
    exit $exitVal;
 };
 
-
 sub sigclean {
 	print "Caught Signal $!\n";
 	print "Cleanup and Exit\n";
 	$dbh->disconnect if $dbh;
 	die;
 }
-
-BEGIN {
-$sql = q{
-declare
-
-	-- could set dynamically for windows
-	line_terminator varchar2(4) := chr(10);
-
-	DEBUG boolean := false;
-
-	v_trace_file_name varchar2(256);
-	v_line varchar2(32767);
-	i_file_size pls_integer;
-	i_file_pos pls_integer;
-	i_alert_pos pls_integer;
-	i_start_op_time number;
-	i_elapsed_seconds number;
-	fh_tracefile utl_file.file_type;
-
-	i_lines_limit pls_integer := 10 * 1e6;
-	i_curr_line pls_integer := 0;
-
-	buf varchar2(32767);
-
-	function does_trace_file_exist (file_name_in varchar2)
-	return boolean
-	is
-		v_file_exists boolean;
-		i_file_length pls_integer;
-		i_file_blocksize pls_integer;
-	begin
-		utl_file.fgetattr(
-			upper(:DUMPDIR),
-			file_name_in,
-			v_file_exists,
-			i_file_length,
-			i_file_blocksize
-		);
-
-		return v_file_exists;
-	end;
-
-	function get_file_size (file_name_in varchar2)
-	return pls_integer
-	is
-		v_file_exists boolean;
-		i_file_length pls_integer;
-		i_file_blocksize pls_integer;
-	begin
-		utl_file.fgetattr(
-			upper(:DUMPDIR),
-			file_name_in,
-			v_file_exists,
-			i_file_length,
-			i_file_blocksize
-		);
-
-		return i_file_length;
-	end;
-
-	function get_fh(v_trace_file_in varchar2) return utl_file.file_type
-	is
-		f_fh utl_file.file_type;
-	begin
-		f_fh := utl_file.fopen(upper(:DUMPDIR),v_trace_file_in, 'r', 32763);
-		return f_fh;
-	end;
-
-	procedure close_fh(fh_in in out utl_file.file_type)
-	is
-	begin
-		utl_file.fclose(fh_in);
-	end;
-
-	-- where to start reading - always start at zero in this case
-	-- we always want the entire trace file
-	procedure fileseek(fh_in in out utl_file.file_type)
-	is
-	begin
-		utl_file.fseek(fh_in,0);
-	end;
-
-begin
-
-	v_trace_file_name := :tracefile_name_in;
-
-	if not does_trace_file_exist(v_trace_file_name) then
-		raise_application_error(-20001,'Trace file ' || v_trace_file_name || ' does not exist');
-	end if;
-
-	i_file_size := get_file_size(v_trace_file_name);
-
-	fh_tracefile := get_fh(v_trace_file_name);
-
-	--i_lines_limit := 1000;
-	i_curr_line := 0;
-
-	-- size is unlimitet when null passed
-	dbms_output.enable(null);
-
-	while true
-	loop
-		begin
-			utl_file.get_line(fh_tracefile, buf, 32763);
-			-- add the line terminator
-			-- this will preserve blank lines
-			buf := buf || line_terminator;
-			dbms_output.put_line(buf);
-		exception
-		when NO_DATA_FOUND then
-			exit;
-		when others then
-			raise;
-		end;
-
-		i_curr_line := i_curr_line + 1;
-		if (i_curr_line > i_lines_limit) then
-			exit;
-		end if;
-		
-	end loop;
-
-	close_fh(fh_tracefile);
-
-end;
-
-};
-
-};
 
 =head1 tracefile-retriever.pl
 
