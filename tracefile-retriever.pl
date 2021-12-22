@@ -11,7 +11,6 @@ use Getopt::Long;
 
 my %optctl = ();
 my($db, $username, $password, $connectionMode, $dumpDir, $tracefileName, $sql, $help);
-my $exitCode=0;
 
 Getopt::Long::GetOptions(
 	\%optctl, 
@@ -61,9 +60,6 @@ my $dbh = DBI->connect(
 
 die "Connect to  $db failed \n" unless $dbh;
 
-
-$exitCode=0;
-
 $dbh->{ora_check_sql} = 0;
 $dbh->{RowCacheSize} = 100;
 
@@ -78,7 +74,6 @@ $sth->execute;
 
 while ( my $line = $dbh->func('dbms_output_get')) {
 	print "$line";
-	exit $exitCode if $exitCode;
 }
 
 $dbh->disconnect;
