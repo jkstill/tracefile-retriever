@@ -1,5 +1,5 @@
 
-RDS Oracle Tracefile Retreiver
+RDS Oracle Tracefile Retriever
 ==============================
 
 Provided two scripts for getting tracefiles from RDS.
