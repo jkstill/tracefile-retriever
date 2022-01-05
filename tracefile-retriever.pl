@@ -150,10 +150,6 @@ sub sigclean {
 
   tracefile-retriever.pl -database dv07 -username scott -password tiger 
 
-  Note: This script uses dbms_output to move the data
-  due to this, the entire trace file is buffered on the server side (PGA memory)
-  be careful with very large trace files.
-
   Why not use CLOB?  See the following notes.
 
   Why not use PIPE ROW?  Because it requires creating database objects,
