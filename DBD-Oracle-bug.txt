@@ -1,0 +1,7 @@
+
+there is a bug in older versions of DBD::Oracle that prevents the normal use of ora_lob_read on bfiles
+
+https://rt.cpan.org/Public/Bug/Display.html?id=75163
+
+So the script tr2.pl does not work with the DBD::Oracle that is installed with Oracle 11g
+
