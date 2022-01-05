@@ -1,6 +1,14 @@
 #!/usr/bin/env perl
 
 # template for DBI programs
+=head1 ORA-24801
+
+ This script will throw an ORA-24801
+ It is a bug in DBD::Oracle
+
+ see DBD-Oracle-bug.txt
+
+=cut
 
 use warnings;
 use FileHandle;
