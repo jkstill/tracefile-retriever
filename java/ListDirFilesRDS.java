@@ -27,7 +27,7 @@ public class ListDirFilesRDS {
 			con = OracleConnect.getConnection(username.toString() + "/" + password.toString() + "@" + dbString.toString());
 		}
 		catch(Exception e){
-			System.out.println(e);
+			System.err.println(e);
 		}
 
 		//String dirPath = getDirPath(con,dumpDir.toString());
@@ -37,7 +37,7 @@ public class ListDirFilesRDS {
 			OracleConnect.closeCon(con);
 		}
 		catch(Exception e){
-			System.out.println(e);
+			System.err.println(e);
 		}	
 	}
 
@@ -57,10 +57,11 @@ public class ListDirFilesRDS {
 
 			stmt = con.createStatement();
 			stmt.execute(refreshFileListSQL);
+			stmt.close();
 		}
 		catch(Exception e){
-			System.out.println(e);
-			System.out.println("rdsadmin.manage_tracefiles.refresh_tracefile_listing");
+			System.err.println(e);
+			System.err.println("rdsadmin.manage_tracefiles.refresh_tracefile_listing");
 		}	
 
 		try {
@@ -79,11 +80,13 @@ public class ListDirFilesRDS {
 					System.out.printf("%10s %12d %30s  %-100s%n", type , filesize , mtime, filename);
 
 				} while(rs.next());
+				rs.close();
+				prepStmt.close();
 			}
 		}
 		catch(Exception e){
-			System.out.println(e);
-			System.out.println("Error querying rdsadmin.rds_file_util.listdir");
+			System.err.println(e);
+			System.err.println("Error querying rdsadmin.rds_file_util.listdir");
 		}	
 
 

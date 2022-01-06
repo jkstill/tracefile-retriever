@@ -1,6 +1,10 @@
 :
 
 
+declare tracefile=$1
+
+: ${tracefile:?'please provide filename '}
+
 export PATH=$PATH:$ORACLE_HOME/jdk/bin
 export CLASSPATH=./:$ORACLE_HOME/jdbc/lib/ojdbc6.jar
 # this Java is in the package oraConnect, and so must live in the oraConnect directory
@@ -13,13 +17,13 @@ export CLASSPATH=./:$ORACLE_HOME/jdbc/lib/ojdbc6.jar
 }
 
 
-[[ ListDirFiles.java -nt ListDirFiles.class ]] && {
-	echo Building ListDirFiles.class
-	javac -Xdiags:verbose  ListDirFiles.java
+[[ RetrieveDirFile.java -nt RetrieveDirFile.class ]] && {
+	echo Building RetrieveDirFile.class
+	javac -Xdiags:verbose  RetrieveDirFile.java
 }
 
 # database username password
 # database can be EZ Connect
-java ListDirFiles "$ORADB" "$ORAUSER" "$ORAPASSWORD" $ORADIR
-#
+time java RetrieveDirFile "$ORADB" "$ORAUSER" "$ORAPASSWORD" $ORADIR "$tracefile" > trace/"$tracefile"
+
 

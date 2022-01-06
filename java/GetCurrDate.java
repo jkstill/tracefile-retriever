@@ -24,7 +24,7 @@ public class GetCurrDate {
 			con = OracleConnect.getConnection(username.toString() + "/" + password.toString() + "@" + dbString.toString());
 		}
 		catch(Exception e){
-			System.out.println(e);
+			System.err.println(e);
 		}
 
 		String sysDate = OraDates.getSysDate(con);
@@ -34,7 +34,7 @@ public class GetCurrDate {
 			OracleConnect.closeCon(con);
 		}
 		catch(Exception e){
-			System.out.println(e);
+			System.err.println(e);
 		}	
 	}
 }

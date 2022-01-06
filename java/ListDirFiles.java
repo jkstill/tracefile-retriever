@@ -27,7 +27,7 @@ public class ListDirFiles {
 			con = OracleConnect.getConnection(username.toString() + "/" + password.toString() + "@" + dbString.toString());
 		}
 		catch(Exception e){
-			System.out.println(e);
+			System.err.println(e);
 		}
 
 		String dirPath = getDirPath(con,dumpDir.toString());
@@ -38,7 +38,7 @@ public class ListDirFiles {
 			OracleConnect.closeCon(con);
 		}
 		catch(Exception e){
-			System.out.println(e);
+			System.err.println(e);
 		}	
 	}
 
@@ -52,9 +52,10 @@ public class ListDirFiles {
 			ResultSet rs = prepStmt.executeQuery();
 			rs.next();
 			dirPath = rs.getString(1);
+			rs.close();
 		}
 		catch(Exception e){
-			System.out.println(e);
+			System.err.println(e);
 		}	
 
 		return dirPath;
@@ -71,30 +72,33 @@ public class ListDirFiles {
 			prepStmt = con.prepareStatement(plsqlBlock);
 			prepStmt.setString(1,dirPath);
 			prepStmt.execute();
+			prepStmt.close();
 		}
 		catch(Exception e){
-			System.out.println(e);
-			System.out.println("dbms_backup_restore.searchfiles");
-			System.out.println("PL/SQL: " + plsqlBlock);
+			System.err.println(e);
+			System.err.println("dbms_backup_restore.searchfiles");
+			System.err.println("PL/SQL: " + plsqlBlock);
 		}	
 
 		try {
 			stmt=con.createStatement();
+			// tried getting the size via the SIZE_KRBMSFT column, but it is always 0
 			ResultSet rs=stmt.executeQuery("select fname_krbmsft as file_name from x$krbmsft order by 1");
 
 			if (rs.next() == false ) {
-				System.out.println("no files found");
+				System.err.println("no files found");
 			} else {
 				do {
-					String data = rs.getString("file_name");
-					System.out.println(data);
+					String fname = rs.getString("file_name");
+					System.err.println(fname);
 
 				} while(rs.next());
+				rs.close();
 			}
 		}
 		catch(Exception e){
-			System.out.println(e);
-			System.out.println("Error querying x$krbmsft x$krbmsft");
+			System.err.println(e);
+			System.err.println("Error querying x$krbmsft x$krbmsft");
 		}	
 
 

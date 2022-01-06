@@ -20,6 +20,6 @@ export CLASSPATH=./:$ORACLE_HOME/jdbc/lib/ojdbc6.jar
 
 # database username password
 # database can be EZ Connect
-java ListDirFilesRDS "$ORADB" "$ORAUSER" "$ORAPASSWORD" BDUMP
+java ListDirFilesRDS "$ORADB" "$ORAUSER" "$ORAPASSWORD" $ORADIR
 
 
