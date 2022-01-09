@@ -9,13 +9,13 @@ export CLASSPATH=./:$ORACLE_HOME/jdbc/lib/ojdbc6.jar
 # by default the oraConnect directory is used
 #javac -Xdiags:verbose -d oraConnect oraConnect/OracleConnect.java
 [[ GetCurrDate.java -nt GetCurrDate.class ]] && {
-	echo Building GetCurrDate
+	echo Building GetCurrDate >&2
 	javac -Xdiags:verbose  GetCurrDate.java
 }
 
 
 [[ dates/OraDates.java -nt dates/OraDates.class ]] && {
-	echo building dates/OraDates
+	echo building dates/OraDates >&2
 	javac -Xdiags:verbose  dates/OraDates.java
 }
 

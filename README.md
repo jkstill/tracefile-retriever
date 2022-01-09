@@ -2,6 +2,10 @@
 RDS Oracle Tracefile Retriever
 ==============================
 
+For Perl scripts, keep reading.
+
+Java programs -> (Java Tracefile Utilities)[https://github.com/jkstill/tracefile-retriever/blob/master/java/README.md)
+
 Provided two scripts for getting tracefiles from RDS.
 
 * rds-tracefile-listing.pl
