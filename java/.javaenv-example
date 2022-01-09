@@ -1,0 +1,14 @@
+
+PATH=$PATH:$ORACLE_HOME/jdk/bin
+CLASSPATH=./:$ORACLE_HOME/jdbc/lib/ojdbc6.jar
+
+export PATH CLASSPATH
+
+ORADB='server01:1521/mydomain.jks.com'
+ORAUSER='scott'
+#ORAUSER='sys as sysdba'
+ORAPASSWORD='tiger'
+ORADIR=BDUMP
+
+export ORADB ORAUSER ORAPASSWORD ORADIR
+
