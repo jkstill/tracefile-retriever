@@ -2,8 +2,13 @@
 Tracefile Listing with Oracle Java
 ==================================
 
+Here a combination of Oracle Java, client Java, and PL/SQL is used to list the files in the tracefile directory.
+
+There is no limit on the number of files that may be shown.
 
 ## Install
+
+Just run the create scripts in the order shown
 
 ### create-directory.sql 
 
@@ -15,8 +20,7 @@ This will point to the location on the file system of the trace files.
 
 Adjust as needed.
 
-Probably needs to be updated for RDS if used there.
-
+This *may* work with Oracle on RDS if the proper permissions can be set.
 
 ### filelist-type.sql
 
