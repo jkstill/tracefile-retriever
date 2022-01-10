@@ -54,6 +54,10 @@ Each of the following are a directory with Java code for listing the files in th
 
 Each does this job a little differently, so pick the one most appropriate for you.
 
+The arguments for each are the same:  java PROGRAM server:port/server username password oracle-directory
+
+See the `ListDirFiles*.sh` scripts for examples.
+
 ### ./list-dir-files-Oracle
 
 Java programs that use a combination of Java in the database, Java on the client, and PL/SQL, to list the files in the trace file directory.
@@ -113,6 +117,14 @@ js01_arc1_18472.trm
 ```
 
 #### retrieve the file - local network
+
+The command line for `RetrieveDirFile.sh`:
+
+The arguments for each are the same:  java PROGRAM server:port/server username password oracle-directory
+
+  java RetrieveDirFile  server:port/server username password oracle-directory tracefile-name
+
+Example:
 
 ```text
 $  cd ../retrieve-dir-files/
