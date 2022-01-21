@@ -63,18 +63,35 @@ die "Connect to  $db failed \n" unless $dbh;
 $dbh->{ora_check_sql} = 0;
 $dbh->{RowCacheSize} = 100;
 
+my $blksz=2**20;
+$dbh->{LongReadLen} = $blksz;
+
 #print "DUMPDIR: $dumpDir\n";
 #print "tracefile: $tracefileName\n";
 
 $sql = "select bfilename(?, ?) from dual";
-my $sth = $dbh->prepare($sql, {ora_auto_lob=>0}) or die;
+my $sth = $dbh->prepare($sql, {ora_auto_lob=>1}) or die;
 $sth->execute($dumpDir, $tracefileName);
 # LOB Locator
 my ($loc) = $sth->fetchrow_array();
 
-my $blksz=2**20;
+warn "LOC: $loc\n";
+
 for (my $off=1; 1; $off += $blksz) {
-	my $piece = $dbh->ora_lob_read($loc, $off, $blksz);
+	# this error occurs at EOF with bfile
+	# DBD::Oracle::db::ora_lob_read: locator is not of type OCILobLocatorPtr
+	# only when ora_auto_lob is set to 1
+	# when ora_lob_read is set to 0, sometimes DBD::Oracle fails to open the file
+	# and triggers ORA-22289
+	# see this discussion for details
+	# https://rt.cpan.org/Public/Bug/Display.html?id=75163
+	# I think there is still a bug
+
+	my $piece;
+	eval {
+		$piece = $dbh->ora_lob_read($loc, $off, $blksz);
+	} or do { last; };
+
 	last if length($piece) == 0;
 	print $piece;
 }
